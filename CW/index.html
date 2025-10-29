@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lessons</title>
+  <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <h1 v-text="sitename"></h1>
+      <button v-on:click="showCheckout">
+        Cart ({{ itemsInCart }}) - Checkout
+      </button>
+    </header>
+
+    <main v-if="showProduct">
+      <figure v-for="product in products" :key="product.id">
+        <p>Subject: {{ product.subject }}</p>
+        <p>Location: {{ product.location }}</p>
+        <p>Price: ${{ product.price }}</p>
+        <p>Space left: {{ product.availableItems }}</p>
+
+        <!-- Add button -->
+        <button 
+          v-if="product.availableItems > 0"
+          v-on:click="addItemToTheCart(product)">
+          Add to cart
+        </button>
+
+        <!-- Remove button -->
+        <button 
+          v-if="product.availableItems < product.maxItems"
+          v-on:click="removeItemFromCart(product)">
+          Remove from cart
+        </button>
+
+        <div v-if="product.availableItems === 0">
+          <button disabled>Add to Cart</button>
+          No more available items.
+        </div>
+      </figure>
+    </main>
+
+    <main v-else>
+      <h1>Welcome to the checkout page</h1>
+    </main>
+  </div>
+
+  <script>
+    new Vue({
+      el: "#app",
+      data: {
+        sitename: "Lessons",
+        showProduct: true,
+        products: [
+          {
+            id: "1001",
+            subject: "Math",
+            price: 100,
+            location: "Liverpool",
+            availableItems: 5,
+            maxItems: 5  // added to track original stock
+          },
+          {
+            id: "1002",
+            subject: "English",
+            price: 90,
+            location: "London",
+            availableItems: 9,
+            maxItems: 9
+          },
+        ],
+        cart: [],
+      },
+      methods: {
+        showCheckout() {
+          this.showProduct = !this.showProduct;
+        },
+        addItemToTheCart(product) {
+          if (product.availableItems > 0) {
+            this.cart.push(product.id);
+            product.availableItems--; // decrease available space
+          }
+        },
+        removeItemFromCart(product) {
+          // simpler logic — only remove if product is in the cart
+          for (let i = 0; i < this.cart.length; i++) {
+            if (this.cart[i] === product.id) {
+              this.cart.splice(i, 1); // remove one matching id
+              product.availableItems++; // restore availability
+              break; // stop after removing one
+            }
+          }
+        },
+      },
+      computed: {
+        itemsInCart() {
+          return this.cart.length;
+        },
+      },
+    });
+  </script>
+</body>
+</html>
