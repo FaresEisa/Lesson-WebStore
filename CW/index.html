@@ -14,12 +14,51 @@
       <h1 v-text="sitename"></h1>
 
       <!-- Disable checkout button if cart is empty -->
-      <button 
-        v-on:click="showCheckout"
-        :disabled="cart.length === 0">
+      <button v-on:click="showCheckout" :disabled="cart.length === 0">
         Cart ({{ itemsInCart }}) - Checkout
       </button>
-      <button> sort </button>
+
+      <!-- Sort toggle button -->
+      <button v-on:click="toggleSort"> Sort </button>
+
+      <!-- Sorting options shown only when toggled -->
+      <div v-if="showSortOptions" style="margin-top: 10px;">
+
+        <!-- Sort category buttons -->
+        <button v-on:click="selectSortCategory('subject')"> subject </button>
+        <button v-on:click="selectSortCategory('location')"> location </button>
+        <button v-on:click="selectSortCategory('price')"> price </button>
+        <button v-on:click="selectSortCategory('availableItems')"> spaces </button>
+
+        <!-- Asc / Desc: Only visible after clicking a product -->
+        <div v-if="selectedSort" style="margin-top: 5px;">
+
+          <!-- Subject sorting -->
+          <div v-if="selectedSort === 'subject'">
+            <button v-on:click="sortBySubject('asc')"> Asc </button>
+            <button v-on:click="sortBySubject('desc')"> Desc </button>
+          </div>
+
+          <!-- Location sorting -->
+          <div v-if="selectedSort === 'location'">
+            <button v-on:click="sortByLocation('asc')"> Asc </button>
+            <button v-on:click="sortByLocation('desc')"> Desc </button>
+          </div>
+
+          <!-- Price sorting -->
+          <div v-if="selectedSort === 'price'">
+            <button v-on:click="sortByPrice('asc')"> Asc </button>
+            <button v-on:click="sortByPrice('desc')"> Desc </button>
+          </div>
+
+          <!-- Spaces sorting -->
+          <div v-if="selectedSort === 'availableItems'">
+            <button v-on:click="sortBySpaces('asc')"> Asc </button>
+            <button v-on:click="sortBySpaces('desc')"> Desc </button>
+          </div>
+
+        </div>
+      </div>
     </header>
 
     <!-- Product List -->
@@ -33,16 +72,12 @@
         <p>Space left: {{ product.availableItems }}</p>
 
         <!-- Add to cart -->
-        <button 
-          v-if="product.availableItems > 0" 
-          v-on:click="addItemToTheCart(product)">
+        <button v-if="product.availableItems > 0" v-on:click="addItemToTheCart(product)">
           Add to cart
         </button>
 
         <!-- Remove from cart -->
-        <button 
-          v-if="product.availableItems < product.maxItems" 
-          v-on:click="removeItemFromCart(product)">
+        <button v-if="product.availableItems < product.maxItems" v-on:click="removeItemFromCart(product)">
           Remove from cart
         </button>
 
@@ -55,7 +90,7 @@
 
     <!-- Checkout Page -->
     <main v-else>
-      <h2>Checkout</h2> 
+      <h2>Checkout</h2>
 
       <div v-if="cart.length > 0">
         <div v-for="product in checkoutItems" :key="product.id" class="checkout-item">
@@ -81,6 +116,8 @@
       data: {
         sitename: "Lessons",
         showProduct: true,
+        showSortOptions: false,
+        selectedSort: null,
         products: [
           { id: "1001", subject: "Math", price: 100, location: "Newport", availableItems: 5, maxItems: 5 },
           { id: "1002", subject: "English", price: 90, location: "London", availableItems: 9, maxItems: 9 },
@@ -93,14 +130,60 @@
             this.showProduct = false;
           }
         },
+
+        toggleSort() {
+          this.showSortOptions = !this.showSortOptions;
+          this.selectedSort = null; // reset when closed
+        },
+
+        selectSortCategory(category) {
+          this.selectedSort = category;
+        },
+
+        // subecject sorting
+        sortBySubject(order) {
+          if (order === 'asc') {
+            this.products.sort((a, b) => a.subject.localeCompare(b.subject));
+          } else {
+            this.products.sort((a, b) => b.subject.localeCompare(a.subject));
+          }
+        },
+
+        // location sorting
+        sortByLocation(order) {
+          if (order === 'asc') {
+            this.products.sort((a, b) => a.location.localeCompare(b.location));
+          } else {
+            this.products.sort((a, b) => b.location.localeCompare(a.location));
+          }
+        },
+
+        // price Sorting
+        sortByPrice(order) {
+          if (order === 'asc') {
+            this.products.sort((a, b) => a.price - b.price);
+          } else {
+            this.products.sort((a, b) => b.price - a.price);
+          }
+        },
+
+        // space Sorting
+        sortBySpaces(order) {
+          if (order === 'asc') {
+            this.products.sort((a, b) => a.availableItems - b.availableItems);
+          } else {
+            this.products.sort((a, b) => b.availableItems - a.availableItems);
+          }
+        },
+
         addItemToTheCart(product) {
           if (product.availableItems > 0) {
             this.cart.push(product.id);
             product.availableItems--;
           }
         },
+
         removeItemFromCart(product) {
-          // find and remove one instance of the product
           for (let i = 0; i < this.cart.length; i++) {
             if (this.cart[i] === product.id) {
               this.cart.splice(i, 1);
@@ -115,14 +198,11 @@
           return this.cart.length;
         },
         checkoutItems() {
-          // return only the items in the cart
           return this.products.filter(product => this.cart.includes(product.id));
         },
       },
     });
   </script>
 </body>
-
 </html>
-
 
