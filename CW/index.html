@@ -12,25 +12,37 @@
   <div id="app">
     <header>
       <h1 v-text="sitename"></h1>
-      <button v-on:click="showCheckout">
+
+      <!-- Disable checkout button if cart is empty -->
+      <button 
+        v-on:click="showCheckout"
+        :disabled="cart.length === 0">
         Cart ({{ itemsInCart }}) - Checkout
       </button>
+      <button> sort </button>
     </header>
 
+    <!-- Product List -->
     <main v-if="showProduct">
+      <h2>Available Lessons</h2>
+
       <figure v-for="product in products" :key="product.id">
         <p>Subject: {{ product.subject }}</p>
         <p>Location: {{ product.location }}</p>
         <p>Price: ${{ product.price }}</p>
         <p>Space left: {{ product.availableItems }}</p>
 
-        <!-- Add button -->
-        <button v-if="product.availableItems > 0" v-on:click="addItemToTheCart(product)">
+        <!-- Add to cart -->
+        <button 
+          v-if="product.availableItems > 0" 
+          v-on:click="addItemToTheCart(product)">
           Add to cart
         </button>
 
-        <!-- Remove button -->
-        <button v-if="product.availableItems < product.maxItems" v-on:click="removeItemFromCart(product)">
+        <!-- Remove from cart -->
+        <button 
+          v-if="product.availableItems < product.maxItems" 
+          v-on:click="removeItemFromCart(product)">
           Remove from cart
         </button>
 
@@ -41,8 +53,25 @@
       </figure>
     </main>
 
+    <!-- Checkout Page -->
     <main v-else>
-      <h1>Welcome to the checkout page</h1>
+      <h2>Checkout</h2> 
+
+      <div v-if="cart.length > 0">
+        <div v-for="product in checkoutItems" :key="product.id" class="checkout-item">
+          <p>Subject: {{ product.subject }}</p>
+          <p>Location: {{ product.location }}</p>
+          <p>Price: ${{ product.price }}</p>
+
+          <button v-on:click="removeItemFromCart(product)"> Remove</button>
+        </div>
+      </div>
+
+      <div v-else>
+        <p>Your cart is empty.</p>
+      </div>
+
+      <button v-on:click="showProduct = true">Back to Lessons</button>
     </main>
   </div>
 
@@ -53,53 +82,30 @@
         sitename: "Lessons",
         showProduct: true,
         products: [
-          {
-            id: "1001", subject: "Math", price: 100, location: "Newport", availableItems: 5, maxItems: 5  // added to track original stock
-          },
-          {
-            id: "1002", subject: "English", price: 90, location: "London", availableItems: 9, maxItems: 9
-          },
-          {
-            id: "1003", subject: "Science", price: 75, location: "Birmingham", availableItems: 6, maxItems: 6
-          },
-          {
-            id: "1003", subject: "Art", price: 64, location: "Hamilton", availableItems: 5, maxItems: 5
-          },
-          {
-            id: "1003", subject: "Business", price: 23, location: "Bristol", availableItems: 10, maxItems: 10
-          },
-          {
-            id: "1003", subject: "History", price: 52, location: "Cambridge", availableItems: 7, maxItems: 7
-          },
-          {
-            id: "1003", subject: "Religious Studies", price: 89, location: "Perth", availableItems: 8, maxItems: 8
-          },
-          {
-            id: "1003", subject: "Music", price: 74, location: "Stirling", availableItems: 2, maxItems: 2
-          },
-          {
-            id: "1003", subject: "Law", price: 4, location: "Aberdeen", availableItems: 4, maxItems: 4
-          },
+          { id: "1001", subject: "Math", price: 100, location: "Newport", availableItems: 5, maxItems: 5 },
+          { id: "1002", subject: "English", price: 90, location: "London", availableItems: 9, maxItems: 9 },
         ],
         cart: [],
       },
       methods: {
         showCheckout() {
-          this.showProduct = !this.showProduct;
+          if (this.cart.length > 0) {
+            this.showProduct = false;
+          }
         },
         addItemToTheCart(product) {
           if (product.availableItems > 0) {
             this.cart.push(product.id);
-            product.availableItems--; // decrease available space
+            product.availableItems--;
           }
         },
         removeItemFromCart(product) {
-          // simpler logic — only remove if product is in the cart
+          // find and remove one instance of the product
           for (let i = 0; i < this.cart.length; i++) {
             if (this.cart[i] === product.id) {
-              this.cart.splice(i, 1); // remove one matching id
-              product.availableItems++; // restore availability
-              break; // stop after removing one
+              this.cart.splice(i, 1);
+              product.availableItems++;
+              break;
             }
           }
         },
@@ -108,9 +114,15 @@
         itemsInCart() {
           return this.cart.length;
         },
+        checkoutItems() {
+          // return only the items in the cart
+          return this.products.filter(product => this.cart.includes(product.id));
+        },
       },
     });
   </script>
 </body>
 
 </html>
+
+
