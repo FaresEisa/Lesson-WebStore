@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,16 +25,12 @@
         <p>Space left: {{ product.availableItems }}</p>
 
         <!-- Add button -->
-        <button 
-          v-if="product.availableItems > 0"
-          v-on:click="addItemToTheCart(product)">
+        <button v-if="product.availableItems > 0" v-on:click="addItemToTheCart(product)">
           Add to cart
         </button>
 
         <!-- Remove button -->
-        <button 
-          v-if="product.availableItems < product.maxItems"
-          v-on:click="removeItemFromCart(product)">
+        <button v-if="product.availableItems < product.maxItems" v-on:click="removeItemFromCart(product)">
           Remove from cart
         </button>
 
@@ -57,20 +54,31 @@
         showProduct: true,
         products: [
           {
-            id: "1001",
-            subject: "Math",
-            price: 100,
-            location: "Liverpool",
-            availableItems: 5,
-            maxItems: 5  // added to track original stock
+            id: "1001", subject: "Math", price: 100, location: "Newport", availableItems: 5, maxItems: 5  // added to track original stock
           },
           {
-            id: "1002",
-            subject: "English",
-            price: 90,
-            location: "London",
-            availableItems: 9,
-            maxItems: 9
+            id: "1002", subject: "English", price: 90, location: "London", availableItems: 9, maxItems: 9
+          },
+          {
+            id: "1003", subject: "Science", price: 75, location: "Birmingham", availableItems: 6, maxItems: 6
+          },
+          {
+            id: "1003", subject: "Art", price: 64, location: "Hamilton", availableItems: 5, maxItems: 5
+          },
+          {
+            id: "1003", subject: "Business", price: 23, location: "Bristol", availableItems: 10, maxItems: 10
+          },
+          {
+            id: "1003", subject: "History", price: 52, location: "Cambridge", availableItems: 7, maxItems: 7
+          },
+          {
+            id: "1003", subject: "Religious Studies", price: 89, location: "Perth", availableItems: 8, maxItems: 8
+          },
+          {
+            id: "1003", subject: "Music", price: 74, location: "Stirling", availableItems: 2, maxItems: 2
+          },
+          {
+            id: "1003", subject: "Law", price: 4, location: "Aberdeen", availableItems: 4, maxItems: 4
           },
         ],
         cart: [],
@@ -104,4 +112,5 @@
     });
   </script>
 </body>
+
 </html>
