@@ -15,7 +15,7 @@
 
       <!-- Disable checkout button if cart is empty -->
       <button v-on:click="showCheckout" :disabled="cart.length === 0">
-        Cart ({{ itemsInCart }}) - Checkout
+        Cart ({{ itemsInCart }})
       </button>
 
       <!-- Sort toggle button -->
@@ -30,8 +30,8 @@
         <button v-on:click="selectSortCategory('price')"> price </button>
         <button v-on:click="selectSortCategory('availableItems')"> spaces </button>
 
-        <!-- Asc / Desc: Only visible after clicking a product -->
-        <div v-if="selectedSort" style="margin-top: 5px;">
+        <!-- Asc / Desc: Only visible after clicking a category -->
+        <div v-if="selectedSort">
 
           <!-- Subject sorting -->
           <div v-if="selectedSort === 'subject'">
@@ -107,6 +107,17 @@
       </div>
 
       <button v-on:click="showProduct = true">Back to Lessons</button>
+
+      <!-- User checkout Information -->
+      <h2> Information </h2>
+      <p>
+        First name: <input type="text" id="FirstnameInput"> <br>
+        Phone number: <input type="text" id="phoneInput"> <br>
+        Email: <input type="email" id="EmailInput"> <br>
+        <button v-on:click="storeUser" :disabled="cart.length === 0"> Checkout </button>
+      </p>
+
+      <p id="Result"></p>
     </main>
   </div>
 
@@ -140,7 +151,7 @@
           this.selectedSort = category;
         },
 
-        // subecject sorting
+        // subject sorting 
         sortBySubject(order) {
           if (order === 'asc') {
             this.products.sort((a, b) => a.subject.localeCompare(b.subject));
@@ -149,7 +160,7 @@
           }
         },
 
-        // location sorting
+        // location sorting 
         sortByLocation(order) {
           if (order === 'asc') {
             this.products.sort((a, b) => a.location.localeCompare(b.location));
@@ -158,7 +169,7 @@
           }
         },
 
-        // price Sorting
+        // price Sorting 
         sortByPrice(order) {
           if (order === 'asc') {
             this.products.sort((a, b) => a.price - b.price);
@@ -167,7 +178,7 @@
           }
         },
 
-        // space Sorting
+        // space Sorting 
         sortBySpaces(order) {
           if (order === 'asc') {
             this.products.sort((a, b) => a.availableItems - b.availableItems);
@@ -192,6 +203,43 @@
             }
           }
         },
+
+        // Store and validate user info
+        storeUser() {
+          let firstName = document.getElementById("FirstnameInput").value.trim();
+          let phone = document.getElementById("phoneInput").value.trim();
+          let email = document.getElementById("EmailInput").value.trim();
+
+          let missingFields = [];
+
+          if (firstName === "") missingFields.push("First name");
+          if (phone === "") missingFields.push("Phone number");
+          if (email === "") missingFields.push("Email");
+
+          if (missingFields.length > 0) {
+            document.getElementById("Result").innerHTML =
+              "<b>Please fill in the following fields: " + missingFields.join(", ") + ".</b>";
+            return;
+          }
+
+          // Validate phone number
+          if (phone.length !== 11 || isNaN(phone)) {
+            document.getElementById("Result").innerHTML =
+              "<b>Please enter a valid 11-digit phone number.</b>";
+            return;
+          }
+
+          // Clear any previous message
+          document.getElementById("Result").innerHTML = "";
+
+          //Check
+          alert("order has been submitted!");
+
+          //clear fields after success
+          document.getElementById("FirstnameInput").value = "";
+          document.getElementById("phoneInput").value = "";
+          document.getElementById("EmailInput").value = "";
+        }
       },
       computed: {
         itemsInCart() {
@@ -205,4 +253,3 @@
   </script>
 </body>
 </html>
-
