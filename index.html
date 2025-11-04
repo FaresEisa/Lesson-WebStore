@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lessons</title>
+  <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <h1 v-text="sitename"></h1>
+
+      <!-- Disable checkout button if cart is empty -->
+      <button v-on:click="showCheckout" :disabled="cart.length === 0">
+        Cart ({{ itemsInCart }})
+      </button>
+
+      <!-- Sort toggle button -->
+      <button v-on:click="toggleSort"> Sort </button>
+
+      <!-- Sorting options shown only when toggled -->
+      <div v-if="showSortOptions" style="margin-top: 10px;">
+        <button v-on:click="selectSortCategory('subject')"> subject </button>
+        <button v-on:click="selectSortCategory('location')"> location </button>
+        <button v-on:click="selectSortCategory('price')"> price </button>
+        <button v-on:click="selectSortCategory('availableItems')"> spaces </button>
+
+        <div v-if="selectedSort">
+          <div v-if="selectedSort === 'subject'">
+            <button v-on:click="sortBySubject('asc')"> Asc </button>
+            <button v-on:click="sortBySubject('desc')"> Desc </button>
+          </div>
+
+          <div v-if="selectedSort === 'location'">
+            <button v-on:click="sortByLocation('asc')"> Asc </button>
+            <button v-on:click="sortByLocation('desc')"> Desc </button>
+          </div>
+
+          <div v-if="selectedSort === 'price'">
+            <button v-on:click="sortByPrice('asc')"> Asc </button>
+            <button v-on:click="sortByPrice('desc')"> Desc </button>
+          </div>
+
+          <div v-if="selectedSort === 'availableItems'">
+            <button v-on:click="sortBySpaces('asc')"> Asc </button>
+            <button v-on:click="sortBySpaces('desc')"> Desc </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Product List -->
+    <main v-if="showProduct">
+      <h2>Available Lessons</h2>
+
+      <figure v-for="product in products" :key="product.id">
+        <p>Subject: {{ product.subject }}</p>
+        <p>Location: {{ product.location }}</p>
+        <p>Price: ${{ product.price }}</p>
+        <p>Space left: {{ product.availableItems }}</p>
+
+        <!-- Add to cart -->
+        <button v-if="product.availableItems > 0" v-on:click="addItemToTheCart(product)">
+          Add to cart
+        </button>
+
+        <!-- Remove from cart -->
+        <button v-if="product.availableItems < product.maxItems" v-on:click="removeItemFromCart(product)">
+          Remove from cart
+        </button>
+
+        <div v-if="product.availableItems === 0">
+          <button disabled>Add to Cart</button>
+          No more available items.
+        </div>
+      </figure>
+    </main>
+
+    <!-- Checkout Page -->
+    <main v-else>
+      <h2>Checkout</h2>
+
+      <div v-if="cart.length > 0">
+        <div v-for="product in checkoutItems" :key="product.id" class="checkout-item">
+          <p>Subject: {{ product.subject }}</p>
+          <p>Location: {{ product.location }}</p>
+          <p>Price: ${{ product.price }}</p>
+          <p>Quantity: {{ product.quantity }}</p>
+          <button v-on:click="removeItemFromCart(product)"> Remove</button>
+        </div>
+      </div>
+
+      <div v-else>
+        <p>Your cart is empty.</p>
+      </div>
+
+      <button v-on:click="showProduct = true">Back to Lessons</button>
+
+      <!-- User checkout Information -->
+      <h2> Information </h2>
+      <p>
+        First name: <input type="text" id="FirstnameInput"> <br>
+        Phone number: <input type="text" id="phoneInput"> <br>
+        Email: <input type="email" id="EmailInput"> <br>
+        <button v-on:click="storeUser" :disabled="cart.length === 0"> Checkout </button>
+      </p>
+
+      <p id="Result"></p>
+    </main>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
