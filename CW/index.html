@@ -23,40 +23,31 @@
 
       <!-- Sorting options shown only when toggled -->
       <div v-if="showSortOptions" style="margin-top: 10px;">
-
-        <!-- Sort category buttons -->
         <button v-on:click="selectSortCategory('subject')"> subject </button>
         <button v-on:click="selectSortCategory('location')"> location </button>
         <button v-on:click="selectSortCategory('price')"> price </button>
         <button v-on:click="selectSortCategory('availableItems')"> spaces </button>
 
-        <!-- Asc / Desc: Only visible after clicking a category -->
         <div v-if="selectedSort">
-
-          <!-- Subject sorting -->
           <div v-if="selectedSort === 'subject'">
             <button v-on:click="sortBySubject('asc')"> Asc </button>
             <button v-on:click="sortBySubject('desc')"> Desc </button>
           </div>
 
-          <!-- Location sorting -->
           <div v-if="selectedSort === 'location'">
             <button v-on:click="sortByLocation('asc')"> Asc </button>
             <button v-on:click="sortByLocation('desc')"> Desc </button>
           </div>
 
-          <!-- Price sorting -->
           <div v-if="selectedSort === 'price'">
             <button v-on:click="sortByPrice('asc')"> Asc </button>
             <button v-on:click="sortByPrice('desc')"> Desc </button>
           </div>
 
-          <!-- Spaces sorting -->
           <div v-if="selectedSort === 'availableItems'">
             <button v-on:click="sortBySpaces('asc')"> Asc </button>
             <button v-on:click="sortBySpaces('desc')"> Desc </button>
           </div>
-
         </div>
       </div>
     </header>
@@ -97,7 +88,7 @@
           <p>Subject: {{ product.subject }}</p>
           <p>Location: {{ product.location }}</p>
           <p>Price: ${{ product.price }}</p>
-
+          <p>Quantity: {{ product.quantity }}</p>
           <button v-on:click="removeItemFromCart(product)"> Remove</button>
         </div>
       </div>
@@ -121,6 +112,6 @@
     </main>
   </div>
 
-   <script src="index.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

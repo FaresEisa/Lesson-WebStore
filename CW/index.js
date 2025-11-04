@@ -1,5 +1,4 @@
 
-//index.js
 new Vue({
   el: "#app",
   data: {
@@ -22,14 +21,14 @@ new Vue({
 
     toggleSort() {
       this.showSortOptions = !this.showSortOptions;
-      this.selectedSort = null; // reset when closed
+      this.selectedSort = null;
     },
 
     selectSortCategory(category) {
       this.selectedSort = category;
     },
 
-    // subject sorting 
+    // Subject sorting
     sortBySubject(order) {
       if (order === 'asc') {
         this.products.sort((a, b) => a.subject.localeCompare(b.subject));
@@ -38,7 +37,7 @@ new Vue({
       }
     },
 
-    // location sorting 
+    // Location sorting
     sortByLocation(order) {
       if (order === 'asc') {
         this.products.sort((a, b) => a.location.localeCompare(b.location));
@@ -47,7 +46,7 @@ new Vue({
       }
     },
 
-    // price Sorting 
+    // Price sorting
     sortByPrice(order) {
       if (order === 'asc') {
         this.products.sort((a, b) => a.price - b.price);
@@ -56,7 +55,7 @@ new Vue({
       }
     },
 
-    // space Sorting 
+    // Spaces sorting
     sortBySpaces(order) {
       if (order === 'asc') {
         this.products.sort((a, b) => a.availableItems - b.availableItems);
@@ -65,23 +64,29 @@ new Vue({
       }
     },
 
+    //Cart with quantity tracking
     addItemToTheCart(product) {
       if (product.availableItems > 0) {
-        this.cart.push(product.id);
+        const cartItem = this.cart.find(item => item.id === product.id);
+        if (cartItem) {
+          cartItem.quantity++;
+        } else {
+          this.cart.push({ id: product.id, quantity: 1 });
+        }
         product.availableItems--;
       }
     },
 
     removeItemFromCart(product) {
-      for (let i = 0; i < this.cart.length; i++) {
-        if (this.cart[i] === product.id) {
-          this.cart.splice(i, 1);
-          product.availableItems++;
-          break;
+      const cartItem = this.cart.find(item => item.id === product.id);
+      if (cartItem) {
+        cartItem.quantity--;
+        product.availableItems++;
+        if (cartItem.quantity === 0) {
+          this.cart = this.cart.filter(item => item.id !== product.id);
         }
       }
     },
-
     // Store and validate user info
     storeUser() {
       let firstName = document.getElementById("FirstnameInput").value.trim();
@@ -121,11 +126,14 @@ new Vue({
   },
   computed: {
     itemsInCart() {
-      return this.cart.length;
+      return this.cart.reduce((total, item) => total + item.quantity, 0);
     },
+    //checkoutItems with quantity display
     checkoutItems() {
-      return this.products.filter(product => this.cart.includes(product.id));
+      return this.cart.map(cartItem => {
+        const product = this.products.find(p => p.id === cartItem.id);
+        return { ...product, quantity: cartItem.quantity };
+      });
     },
   },
-
 });
