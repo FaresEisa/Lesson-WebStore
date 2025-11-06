@@ -1,6 +1,13 @@
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-// MongoDB connection
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+// MongoDB connection setup
 const password = "52wkoW70E0j9V1eG";
 const userName = "fares";
 const server = "fares.ozppq.mongodb.net";
@@ -18,38 +25,50 @@ const client = new MongoClient(connectionURI, {
   },
 });
 
-//Vue products array
-const products = [
-  { id: "1001", subject: "Math", price: 100, location: "Newport", availableItems: 8, maxItems: 8 },
-  { id: "1002", subject: "English", price: 90, location: "London", availableItems: 9, maxItems: 9 },
-];
+let db;
 
-// Convert products to match Lessons collection structure
-const lessons = products.map(product => ({
-  id: product.id,
-  topic: product.subject,
-  price: product.price,
-  location: product.location,
-  spaces: product.availableItems
-}));
-
-//insert lessons to mongoDb
-async function insertLessons() {
-  try {
-    await client.connect();
-    console.log("Connected to MongoDB");
-
-    const database = client.db("OnlineStore");
-    const lessonsCollection = database.collection("Lessons");
-
-    // Insert all lessons
-    const result = await lessonsCollection.insertMany(lessons);
-    console.log(`${result.insertedCount} lessons inserted successfully`);
-  } catch (error) {
-    console.error("Error inserting lessons:", error);
-  } finally {
-    await client.close();
-    console.log("Connection closed");
-  }
+// Connect to MongoDB
+async function connectToDatabase() {
+  await client.connect();
+  db = client.db("OnlineStore");
+  console.log("Connected to MongoDB");
 }
-insertLessons();
+connectToDatabase();
+
+// Post for orders
+app.post("/orders", async (req, res) => {
+  const { firstName, phone, email, cart } = req.body;
+
+  if (!firstName || !phone || !email || !cart || cart.length === 0) {
+    return res.status(400).json({ error: "Missing fields or empty cart" });
+  }
+
+  try {
+    const ordersCollection = db.collection("Orders");
+
+    // Transform the cart items into individual order entries
+    const ordersToInsert = cart.map(item => ({
+      id: item.id,                 // lesson id
+      quantity: item.quantity,     // number of lessons
+      name: firstName,             // customer's name
+      email: email,                // customer's email
+      phone: phone,                // customer's phone number
+    }));
+
+    // Insert all orders
+    const result = await ordersCollection.insertMany(ordersToInsert);
+
+    res.status(201).json({
+      success: true,
+      insertedCount: result.insertedCount
+    });
+
+  } catch (error) {
+    console.error("Error inserting order:", error);
+    res.status(500).json({ error: "Failed to store order" });
+  }
+});
+
+// Start the server
+app.listen(3000, () => console.log("Server running on port 3000"));
+
