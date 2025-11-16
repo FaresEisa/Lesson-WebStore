@@ -184,6 +184,7 @@ async function startServer() {
 
 // Example URLs for testing images and lessons
 // http://localhost:3000/images/math.jpg
+// http://localhost:3000/images/english.jpg 
 // http://localhost:3000/lessons
 
 
