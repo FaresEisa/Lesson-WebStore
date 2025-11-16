@@ -32,6 +32,7 @@ button:hover {
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
 
+/* Disabled button state */
 button:disabled {
   background-color: #555;
   cursor: not-allowed;
@@ -80,6 +81,7 @@ button:disabled {
   box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
 }
 
+/* Icon inside lesson box */
 .lesson-icon {
   float: right;
   font-size: 22px;
@@ -87,6 +89,7 @@ button:disabled {
   text-shadow: 0 0 6px rgba(96, 165, 250, 0.5);
 }
 
+/* Buttons inside lesson boxes */
 .lesson-box button {
   display: block;
   margin-top: 10px;
@@ -105,6 +108,7 @@ button:disabled {
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
 }
 
+/* Checkout Page */
 .checkout-section {
   display: flex;
   flex-direction: column;
@@ -119,12 +123,14 @@ button:disabled {
   color: #dbeafe;
 }
 
+/* Shopping cart page */
 .cart-container {
   margin-bottom: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; 
 }
 
+/* Input Fields */
 input {
   background-color: #1e293b;
   border: 1px solid #3b82f6;
@@ -141,7 +147,8 @@ input:focus {
   box-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
 }
 
+/* Glass effect */
 .lesson-box,
 .checkout-section {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px); /* Blurred background */
 }
